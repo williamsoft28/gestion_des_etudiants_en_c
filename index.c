@@ -1,59 +1,113 @@
 #include <stdio.h>
-#include <stdlib.h> 
+#include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include <time.h>
-#include <locale.h>  
+
 typedef struct {
-    int jour;    
-    int mois;    
-    int annee;   
+    int jour;
+    int mois;
+    int annee;
 } Date;
 
 typedef struct {
-    int secteur;       
+    int secteur;
     char ville[30];
 } Residence;
 
 typedef struct Etudiant {
-    char nom[30];           
-    char prenom[30];        
-    int code;               
-    Date naissance;         
-    char telephone[8];      
-    Residence residence;    
-    struct Etudiant *next;  
+    char nom[30];
+    char prenom[30];
+    int code;
+    Date naissance;
+    char telephone[9]; // 8 chiffres + '\0'
+    Residence residence;
+    struct Etudiant *next;
 } Etudiant;
 
-
-void pause();
-
-
+// Génère un ID unique
 int genererID() {
     srand(time(NULL));
-    return 20250000 + (rand() % 10000); 
+    return 20250000 + (rand() % 10000);
 }
 
+// Valide un téléphone (8 chiffres)
+int estTelephoneValide(const char *tel) {
+    if (strlen(tel) != 8) return 0;
+    for (int i = 0; i < 8; i++) {
+        if (!isdigit(tel[i])) return 0;
+    }
+    return 1;
+}
+
+// Valide une date
+int estDateValide(int jour, int mois, int annee) {
+    if (annee < 1900 || annee > 2025) return 0;
+    if (mois < 1 || mois > 12) return 0;
+    if (jour < 1) return 0;
+
+    int joursParMois[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    if (mois == 2 && ((annee % 4 == 0 && annee % 100 != 0) || (annee % 400 == 0)))
+        joursParMois[1] = 29;
+
+    if (jour > joursParMois[mois - 1]) return 0;
+    return 1;
+}
+
+// Valide une ville (lettres uniquement)
+int estVilleValide(const char *ville) {
+    if (strlen(ville) == 0) return 0;
+    for (int i = 0; ville[i] != '\0'; i++) {
+        if (!isalpha(ville[i])) return 0;
+    }
+    return 1;
+}
+
+// Crée un étudiant avec saisie contrôlée
 Etudiant *creerEtudiant() {
-    Etudiant *e = (Etudiant*)malloc(sizeof(Etudiant));
-    
+    Etudiant *e = (Etudiant *)malloc(sizeof(Etudiant));
+
     printf("\n--- Nouvel Étudiant ---\n");
-    printf("Nom: "); scanf("%s", e->nom);
-    printf("Prénom: "); scanf("%s", e->prenom);
-    
-    e->code = genererID(); 
-    printf("-> ID généré: %d\n", e->code); 
-    
-    printf("Téléphone: "); scanf("%s", e->telephone);
-    
-    printf("Date de naissance (JJ MM AAAA): ");
-    scanf("%d %d %d", &e->naissance.jour, &e->naissance.mois, &e->naissance.annee);
-    
-    printf("Ville: "); scanf("%s", e->residence.ville);
-    printf("Secteur: "); scanf("%d", &e->residence.secteur);
-    
-    e->next = NULL; 
+    printf("Nom : ");
+    scanf("%s", e->nom);
+
+    printf("Prénom : ");
+    scanf("%s", e->prenom);
+
+    e->code = genererID();
+    printf("-> ID généré : %d\n", e->code);
+
+    // Téléphone
+    do {
+        printf("Téléphone (8 chiffres) : ");
+        scanf("%s", e->telephone);
+        if (!estTelephoneValide(e->telephone))
+            printf("❌ Téléphone invalide. Réessayez.\n");
+    } while (!estTelephoneValide(e->telephone));
+
+    // Date de naissance
+    do {
+        printf("Date de naissance (JJ MM AAAA) : ");
+        scanf("%d %d %d", &e->naissance.jour, &e->naissance.mois, &e->naissance.annee);
+        if (!estDateValide(e->naissance.jour, e->naissance.mois, e->naissance.annee))
+            printf("❌ Date invalide. Réessayez.\n");
+    } while (!estDateValide(e->naissance.jour, e->naissance.mois, e->naissance.annee));
+
+    // Ville
+    do {
+        printf("Ville : ");
+        scanf("%s", e->residence.ville);
+        if (!estVilleValide(e->residence.ville))
+            printf("❌ Ville invalide. Lettres uniquement.\n");
+    } while (!estVilleValide(e->residence.ville));
+
+    printf("Secteur : ");
+    scanf("%d", &e->residence.secteur);
+
+    e->next = NULL;
     return e;
 }
+
 
 void ajouterDebut(Etudiant **tete) {
     Etudiant *nouveau = creerEtudiant();  
@@ -197,7 +251,7 @@ void pause() {
 int main() {
     system("chcp 65001 > nul");  // Pour Windows (force UTF-8)
 
-
+Etudiant *liste = NULL;
 
     while (1) { 
         afficherMenu();      
