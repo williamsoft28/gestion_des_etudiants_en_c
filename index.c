@@ -175,7 +175,7 @@ int nombreEtudiants(Etudiant *tete) {
 Etudiant* rechercherEtudiantParID(Etudiant *tete, int id) {
     Etudiant *actuel = tete;
 
-    while (actuel != NULL) {
+    while (actuel  != NULL) {
         if (actuel->code == id) {
             return actuel; 
         }
@@ -190,7 +190,7 @@ void afficherMenu() {
 
     printf("\n\033[1;36m"); 
     printf("┌───────────────────────────────────┐\n");
-    printf("│    📚 GESTION ÉTUDIANTS PRO       │\n");
+    printf("│    📚 GESTION ÉTUDIANTS           │\n");
     printf("├───────────────────────────────────┤\n");
     printf("│ 1. Inscrir étudiant (début)       │\n");
     printf("│ 2. Inscrir étudiant (fin)         │\n");
