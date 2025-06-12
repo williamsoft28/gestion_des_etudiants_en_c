@@ -20,18 +20,18 @@ typedef struct Etudiant {
     char prenom[30];
     int code;
     Date naissance;
-    char telephone[9]; // 8 chiffres + '\0'
+    char telephone[9]; 
     Residence residence;
     struct Etudiant *next;
 } Etudiant;
 
-// Génère un ID unique
+
 int genererID() {
     srand(time(NULL));
     return 20250000 + (rand() % 10000);
 }
 
-// Valide un téléphone (8 chiffres)
+
 int estTelephoneValide(const char *tel) {
     if (strlen(tel) != 8) return 0;
     for (int i = 0; i < 8; i++) {
@@ -40,7 +40,7 @@ int estTelephoneValide(const char *tel) {
     return 1;
 }
 
-// Valide une date
+
 int estDateValide(int jour, int mois, int annee) {
     if (annee < 1900 || annee > 2025) return 0;
     if (mois < 1 || mois > 12) return 0;
@@ -54,7 +54,7 @@ int estDateValide(int jour, int mois, int annee) {
     return 1;
 }
 
-// Valide une ville (lettres uniquement)
+
 int estVilleValide(const char *ville) {
     if (strlen(ville) == 0) return 0;
     for (int i = 0; ville[i] != '\0'; i++) {
@@ -63,7 +63,7 @@ int estVilleValide(const char *ville) {
     return 1;
 }
 
-// Crée un étudiant avec saisie contrôlée
+
 Etudiant *creerEtudiant() {
     Etudiant *e = (Etudiant *)malloc(sizeof(Etudiant));
 
@@ -77,7 +77,7 @@ Etudiant *creerEtudiant() {
     e->code = genererID();
     printf("-> ID généré : %d\n", e->code);
 
-    // Téléphone
+    
     do {
         printf("Téléphone (8 chiffres) : ");
         scanf("%s", e->telephone);
@@ -85,7 +85,7 @@ Etudiant *creerEtudiant() {
             printf("❌ Téléphone invalide. Réessayez.\n");
     } while (!estTelephoneValide(e->telephone));
 
-    // Date de naissance
+    
     do {
         printf("Date de naissance (JJ MM AAAA) : ");
         scanf("%d %d %d", &e->naissance.jour, &e->naissance.mois, &e->naissance.annee);
@@ -93,7 +93,7 @@ Etudiant *creerEtudiant() {
             printf("❌ Date invalide. Réessayez.\n");
     } while (!estDateValide(e->naissance.jour, e->naissance.mois, e->naissance.annee));
 
-    // Ville
+    
     do {
         printf("Ville : ");
         scanf("%s", e->residence.ville);
@@ -249,7 +249,7 @@ void pause() {
 }
 
 int main() {
-    system("chcp 65001 > nul");  // Pour Windows (force UTF-8)
+    system("chcp 65001 > nul");  
 
 Etudiant *liste = NULL;
 
